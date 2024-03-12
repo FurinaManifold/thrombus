@@ -29,7 +29,8 @@ def preprocess_data(dataframe):
     dataframe['Main diagnosis'] = le.fit_transform(dataframe['Main diagnosis'])
 
     # Extract features and target variable
-    features = dataframe[['Age', 'BMI', 'Days of hospitalization', 'Albumin/globulin', 'Total protein','Creatinine','Chloride', 'Potassium','Prothrombin time', 'Fibrinogen', 'D-dimer','Fibrin degradation products']]
+    # features = dataframe[['Age', 'BMI', 'Days of hospitalization', 'Albumin/globulin', 'Total protein','Creatinine','Chloride', 'Potassium','Prothrombin time', 'Fibrinogen', 'D-dimer','Fibrin degradation products']]
+    features = dataframe[['Age', 'BMI', 'Days of hospitalization', 'Albumin/globulin', 'Total protein','Creatinine','Chloride', 'Potassium','Prothrombin time', 'Fibrinogen', 'D-dimer', 'Age_Albumin', 'BMI_Creatinine']]
     target = dataframe['Presence of thrombus']
 
     return features, target
@@ -61,25 +62,25 @@ def plot_confusion_matrix(ax, cm, accuracy, model_name):
     ax.set_title(f'Confusion Matrix - {model_name}\nAccuracy: {accuracy:.2f}')
 
 # Main code
-csv_file_path = 'data2.csv'
-dataframe = load_data(csv_file_path)
+csv_file_path = 'data2.xlsx'
+dataframe = pd.read_excel(csv_file_path)
 features, target = preprocess_data(dataframe)
 X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=0)
 X_train_scaled, X_test_scaled = scale_data(X_train, X_test)
 
 # Initialize models
 logistic_classifier = LogisticRegression(max_iter=100, C=1)
-rf_classifier = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=0)
+rf_classifier = RandomForestClassifier(n_estimators=100, max_depth=None, random_state=0, bootstrap = True)
 svm_classifier = SVC(C=1, kernel='linear')
 nn_classifier = MLPClassifier(
     activation='relu',  # Use ReLU activation function
     alpha=0.0001,  # Regularization parameter (L2 penalty)
-    #solver='adam',  # Optimization solver
+    solver='adam',  # Optimization solver
     learning_rate='adaptive',  # Use a constant learning rate
     learning_rate_init=0.001,  # Initial learning rate
     batch_size='auto',  # Auto determines the batch size based on data size
-    max_iter=50,  # Maximum number of iterations
-    early_stopping=False,  # Disable early stopping
+    max_iter=100,  # Maximum number of iterations
+    early_stopping=False,  # Disable early stoppings
     random_state=0  # Random seed for reproducibility
 )
 
